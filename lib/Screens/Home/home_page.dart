@@ -7,8 +7,11 @@ import 'package:projeto/Screens/Home/drawer_list.dart';
 import 'package:projeto/helpers/theme_colors.dart';
 
 class HomePage extends StatefulWidget {
-  final String name, email;
-  const HomePage({ Key? key, required this.name, required this.email}) : super(key: key);
+
+  final String email;
+  final String nome;
+
+  const HomePage({ Key? key, required this.email, required this.nome}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -20,6 +23,9 @@ class _HomePageState extends State<HomePage> {
   var pageController = PageController();
   @override
   Widget build(BuildContext context) {
+    print(widget.nome);
+
+    Map<String,String> data = ModalRoute.of(context)!.settings.arguments as Map<String,String>;
 
     return Scaffold(
       backgroundColor: ThemeColors.primaryColor,
@@ -116,7 +122,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         Text(
-                          widget.name,
+                          data['nome'].toString(),
+                          //"Nome",
                           style: GoogleFonts.poppins(
                             color: ThemeColors.scaffoldBgColor,
                             fontSize: 20,
@@ -124,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         Text(
-                          widget.email,
+                          data['email'].toString(),
                           style: GoogleFonts.poppins(
                             color: ThemeColors.scaffoldBgColor,
                             fontSize: 14,
