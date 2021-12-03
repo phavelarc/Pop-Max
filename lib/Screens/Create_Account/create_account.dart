@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projeto/Screens/Home/home_page.dart';
+import 'package:projeto/Screens/Login/login_page.dart';
 import 'package:projeto/helpers/theme_colors.dart';
 import 'package:projeto/helpers/rounded_button.dart';
 
@@ -208,12 +211,14 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     widthButton: 1,
                     imageHeight: 0,
                     onTap: () {
-                      //Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage1(name: _nameController.text)));
+                      criarConta(
+                        _nameController.text,
+                        _emailController.text,
+                        _phoneController.text,
+                        _passwordController.text,
+                      );
                       if(_formKey.currentState!.validate() == false) {
                       }
-                      else {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage(name: _nameController.text, email: _emailController.text)));
-                      };
                     },
                   ),
                 ),
@@ -221,6 +226,47 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+  //
+  // CRIAR CONTA no Firebase Auth
+  //
+  void criarConta(nome, email, celular, senha) {
+
+    FirebaseAuth.instance
+      .createUserWithEmailAndPassword(email: email, password: senha)
+      .then((value) {
+
+        print(value.user!.uid);
+
+        FirebaseFirestore.instance.collection('usuarios').doc(value.user!.uid).set({
+          'nome': nome,
+          'email': email,
+          'celular': celular,
+        });
+
+        exibirMensagem('Conta criada com sucesso!');
+        //Navigator.pop(context);
+
+      }).catchError((erro){
+        if (erro.code == 'email-already-in-use'){
+          exibirMensagem('Email já cadastrado!');
+        } else if (erro.code == 'invalid-email'){
+          exibirMensagem('Email inválido!');
+        } else{
+          exibirMensagem('Erro: ${erro.message}');
+        }
+      });
+
+      Navigator.pop(context);
+  }
+
+  void exibirMensagem(msg){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        duration: Duration(seconds: 2),
       ),
     );
   }
