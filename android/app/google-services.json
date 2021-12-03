@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "882432761139",
+    "project_id": "pop-max",
+    "storage_bucket": "pop-max.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882432761139:android:48eb7dbbd75094dc3a7246",
+        "android_client_info": {
+          "package_name": "com.example.projeto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "882432761139-t28eeg6itmbh90su9f3i2174dkv03sm4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxQs0KQp-b7gmYFXJBc2gzJTmPpDIGAAg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882432761139-t28eeg6itmbh90su9f3i2174dkv03sm4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
