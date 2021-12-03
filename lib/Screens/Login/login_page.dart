@@ -1,11 +1,15 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:projeto/Screens/Home/home_page.dart';
 import 'package:projeto/helpers/theme_colors.dart';
 import 'package:projeto/helpers/rounded_button.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({ Key? key }) : super(key: key);
+
+  const LoginPage({ Key? key}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -14,8 +18,10 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  var _emailController = TextEditingController();
+  var _passwordController = TextEditingController();
+  var _nameController = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -155,11 +161,16 @@ class _LoginPageState extends State<LoginPage> {
                     widthButton: 1,
                     imageHeight: 0,
                     onTap: () {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      login(
+                        _nameController.text,
+                        _emailController.text, 
+                        _passwordController.text
+                      );
                       if(_formKey.currentState!.validate() == false) {
                       }
-                      else {
-                        Navigator.pushNamed(context, 'home'); 
-                      };
                     },
                   ),
                 ),
@@ -237,6 +248,56 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  //
+  // LOGIN COM FIREBASE AUTH
+  //
+  void login(nome, email, senha){
+
+    FirebaseAuth.instance.signInWithEmailAndPassword
+    (email: email, password: senha).then((value){
+
+      print(value.user!.uid);
+
+      String nome = "";
+      FirebaseFirestore.instance.collection('usuarios').doc(value.user!.uid).get().then((value){
+        nome = value.data()!['nome'];
+        print(nome);
+
+        Map<String,String> data = {
+          'nome': nome,
+          'email': email,
+        };
+        Navigator.pushReplacementNamed(context, 'home', arguments: data);
+      });
+
+      //Navigator.pushReplacementNamed(context, 'home');
+      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => HomePage(email: email, nome: nome)));
+
+    }).catchError((erro){
+  
+      if(erro.code == 'user-not-found'){
+        exibirMensagem('Usuário não encontrado');
+      }else if(erro.code == 'wrong-password'){
+        exibirMensagem('Senha incorreta');
+      }else if (erro.code == 'invalid-email'){
+        exibirMensagem('Email inválido');
+      }else{
+        exibirMensagem('Erro: ${erro.message}.');
+      }
+
+    });
+    
+  }
+
+  void exibirMensagem(msg){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        duration: Duration(seconds: 2),
       ),
     );
   }
